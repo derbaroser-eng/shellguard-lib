@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shellguard"
+version = "1.0.0"
+description = "Run untrusted text as arguments, never as shell syntax."
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Security",
+  "Topic :: Software Development :: Libraries",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
