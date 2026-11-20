@@ -39,7 +39,7 @@ The `shellguard` name on PyPI belongs to an unrelated package. Install the
 published release wheel directly (zero dependencies, Python 3.8+):
 
 ```bash
-pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.0.0/shellguard-1.0.0-py3-none-any.whl
+pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.1.0/shellguard-1.1.0-py3-none-any.whl
 ```
 
 Or run from a clone without installing:

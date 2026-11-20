@@ -125,7 +125,7 @@ def render_email(delivery, *, product="shellguard commercial license"):
         "Valid until: {exp}\n"
         "\n"
         "Install (zero dependencies):\n"
-        "  pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.0.0/shellguard-1.0.0-py3-none-any.whl\n"
+        "  pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.1.0/shellguard-1.1.0-py3-none-any.whl\n"
         "\n"
         "The MIT source is free forever; this key covers commercial use without\n"
         "MIT attribution.\n"

@@ -14,7 +14,7 @@ from __future__ import annotations
 import subprocess
 from collections import namedtuple
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __all__ = ["run", "build", "quote", "Result", "Timeout", "SafetyError"]
 
 Result = namedtuple("Result", ["returncode", "stdout", "stderr", "ok", "argv"])
