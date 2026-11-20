@@ -27,10 +27,10 @@ semantics keep each token a token.
 ```python
 import shellguard as sg
 
-sg.run(["echo", "(17*23)"])          # -> "391\n"
-sg.run(["echo", "`echo INJECTED`"])  # -> "`echo INJECTED`\n"  (data, not a command)
-sg.run(["echo", "$(rm -rf /)"])      # -> literal text
-sg.run(["false"])                    # Result(returncode=1, ok=False, ...)
+sg.run(["echo", "(17*23)"])            # -> "(17*23)\n"
+sg.run(["echo", "`echo INJECTED`"])    # -> "`echo INJECTED`\n"  (data, not a command)
+sg.run(["echo", "$(touch pwned)"])     # -> literal text, no file written
+sg.run(["false"])                      # Result(returncode=1, ok=False, ...)
 ```
 
 ## Install
@@ -46,19 +46,42 @@ Zero dependencies. Python 3.8+.
 - `run(argv, cwd=None, env=None, timeout=None, check=False)` -> `Result`
 - `build(command, args)` -> argv list
 - `quote(text)` -> POSIX single-quoted token (only for explicit shell mode)
-- `Timeout`, `SafetyError` exceptions
+- `issue(customer, tier, secret)` -> signed commercial license key
+- `verify(key, secret)` -> `License` (or raises `LicenseError`)
+- `Timeout`, `SafetyError`, `LicenseError` exceptions
 - `shell=True` is refused by design; a bare string command is refused by design.
 
 ## Tests
 
 ```bash
-python tests/test_shellguard.py
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
-27 real attack cases: parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline,
-quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes,
-timeouts, cwd, env, exit codes, and stdout/stderr separation.
+42 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
+`|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty
+args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr
+separation) plus 16 license issuance and validation cases (forgery, wrong
+issuer secret, expiry, tampered payload, format).
+
+## Commercial license
+
+The MIT source is free forever. Companies that need to embed shellguard in a
+proprietary product without MIT attribution buy a commercial license: a
+packaged download plus an offline HMAC-SHA256 license key and email support.
+
+```python
+from shellguard.license import verify, LicenseError
+
+try:
+    lic = verify(key, issuer_secret)
+except LicenseError as exc:
+    print("not licensed:", exc)
+```
+
+See `LICENSE-COMMERCIAL.md`. Checkout and delivery are on the landing page:
+<https://derbaroser-eng.github.io/shellguard/>.
 
 ## License
 
-MIT. See LICENSE.
+MIT. See LICENSE. The commercial tier is licensed separately; see
+`LICENSE-COMMERCIAL.md`.
