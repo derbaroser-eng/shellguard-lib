@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shellguard"
-version = "1.3.0"
+version = "1.4.0"
 description = "Run untrusted text as arguments, never as shell syntax."
 readme = "README.md"
 license = {file = "LICENSE"}

@@ -67,14 +67,51 @@ def _stringy(node):
     if isinstance(node, (ast.JoinedStr, ast.BinOp)):
         return True
     if isinstance(node, ast.Call):
-        return _dotted(node.func).endswith("format")
+        func = node.func
+        if isinstance(func, ast.Name) and func.id == "str":
+            return True
+        if isinstance(func, ast.Attribute) and func.attr in ("join", "format"):
+            return True
+        return _dotted(func).endswith("format")
     return False
 
 
-def _from_call(node):
+def _resolve(dotted, aliases):
+    """Resolve the leading name of a dotted call through import aliases."""
+    if not dotted:
+        return dotted
+    head, _, rest = dotted.partition(".")
+    target = aliases.get(head)
+    if target is None:
+        return dotted
+    return target + ("." + rest if rest else "")
+
+
+def _aliases(tree):
+    """Map local names to fully-qualified targets from import statements."""
+    aliases = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for name in node.names:
+                if name.asname:
+                    aliases[name.asname] = name.name
+                else:
+                    head = name.name.split(".")[0]
+                    aliases.setdefault(head, head)
+        elif isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            for name in node.names:
+                if name.name == "*":
+                    continue
+                local = name.asname or name.name
+                aliases[local] = module + "." + name.name if module else name.name
+    return aliases
+
+
+def _from_call(node, aliases):
     """Rule violated by an ast.Call, or None."""
     func = node.func
-    dotted = _dotted(func)
+    dotted = _resolve(_dotted(func), aliases)
     short = dotted.rsplit(".", 1)[-1]
     bare = func.id if isinstance(func, ast.Name) else None
 
@@ -115,10 +152,11 @@ def scan_text(text, filename="<text>"):
             findings.append(Finding(filename, line, col, rule, code))
         return findings
 
+    aliases = _aliases(tree)
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
-        rule = _from_call(node)
+        rule = _from_call(node, aliases)
         if rule is None:
             continue
         code = ""

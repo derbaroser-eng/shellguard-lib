@@ -1,11 +1,12 @@
 """Contract tests for automated commercial delivery (shellguard.delivery)."""
+import hashlib
 import unittest
 
 from shellguard.delivery import (DeliveryError, delivery_email, fulfill,
                                  parse_session, render_email)
 from shellguard.license import LicenseError, verify
 
-SECRET = "unit-test-issuer-secret"
+SECRET = hashlib.sha256(b"shellguard-unit-test-issuer").hexdigest()
 
 
 def session(**over):

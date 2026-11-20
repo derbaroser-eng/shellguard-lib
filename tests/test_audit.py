@@ -74,6 +74,41 @@ class ScanTextTests(unittest.TestCase):
         self.assertEqual(A.render(f),
                          "a.py:3:5: SG001 " + A.RULES[A.SHELL_TRUE])
 
+    def test_aliased_os_system_is_flagged(self):
+        f = A.scan_text("""import os as o
+o.system('ls')
+""")
+        self.assertEqual([x.rule for x in f], [A.OS_EXEC])
+
+    def test_aliased_os_popen_is_flagged(self):
+        f = A.scan_text("""import os as os2
+os2.popen('ls')
+""")
+        self.assertEqual([x.rule for x in f], [A.OS_EXEC])
+
+    def test_aliased_from_import_async_shell_is_flagged(self):
+        f = A.scan_text("""from asyncio import create_subprocess_shell as c
+c('ls')
+""")
+        self.assertEqual([x.rule for x in f], [A.ASYNC_SHELL])
+
+    def test_join_string_argv_is_flagged(self):
+        f = A.scan_text("""import subprocess
+subprocess.run(' '.join(['ls', 'x']))
+""")
+        self.assertEqual([x.rule for x in f], [A.STRING_ARGV])
+
+    def test_str_call_argv_is_flagged(self):
+        f = A.scan_text("""import subprocess
+subprocess.run(str(cmd))
+""")
+        self.assertEqual([x.rule for x in f], [A.STRING_ARGV])
+
+    def test_unrelated_alias_is_not_flagged(self):
+        self.assertEqual(A.scan_text("""import os as o
+o.getcwd()
+"""), [])
+
 
 class AuditPathsTests(unittest.TestCase):
     def setUp(self):
