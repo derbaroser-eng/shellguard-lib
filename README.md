@@ -65,12 +65,12 @@ cd shellguard-lib && PYTHONPATH=src python -c "import shellguard; print(shellgua
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-61 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
+84 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
 `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty
 args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr
 separation) plus 16 license issuance and validation cases (forgery, wrong
-issuer secret, expiry, tampered payload, format) plus 19 CLI cases (run, quote,
-license, exit codes, entry point).
+issuer secret, expiry, tampered payload, format) plus 24 CLI cases (run, quote,
+license, exit codes, entry point) plus 18 delivery cases (license issue, signed key, packaged artifact, email text, Stripe session handoff).
 
 ## Commercial license
 

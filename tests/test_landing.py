@@ -23,6 +23,7 @@ def _landing():
     return SITE.read_text(encoding="utf-8")
 
 
+META_TESTS = {"test_landing.py", "test_docs.py"}
 LANDING_TEST = "test_landing.py"
 
 
@@ -30,7 +31,7 @@ def _test_method_counts():
     """Counts of the *product* suite (this meta-test excluded)."""
     counts = {}
     for path in sorted(TESTS.glob("test_*.py")):
-        if path.name == LANDING_TEST:
+        if path.name in META_TESTS:
             continue
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         n = 0
