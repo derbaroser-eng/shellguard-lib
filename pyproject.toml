@@ -16,8 +16,14 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
 ]
 
+[project.scripts]
+shellguard = "shellguard.cli:main"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+shellguard = ["py.typed"]
