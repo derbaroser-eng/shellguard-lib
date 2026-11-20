@@ -138,3 +138,68 @@ class TestEntrypoint(unittest.TestCase):
         )
         self.assertEqual(p.returncode, 0)
         self.assertEqual(p.stdout, "'a b'\n")
+
+
+def _session(**over):
+    base = {
+        "id": "cs_test_123",
+        "object": "checkout.session",
+        "status": "complete",
+        "payment_status": "paid",
+        "amount_received": 4900,
+        "currency": "eur",
+        "created": 1763664000,
+        "customer_details": {"email": "buyer@example.com"},
+    }
+    base.update(over)
+    return base
+
+
+class TestDeliver(unittest.TestCase):
+    def _write(self, payload, raw=None):
+        import json
+        import tempfile
+        fd, path = tempfile.mkstemp(suffix=".json")
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            if raw is not None:
+                fh.write(raw)
+            else:
+                json.dump(payload, fh)
+        self.addCleanup(os.remove, path)
+        return path
+
+    def test_deliver_emails_a_signed_license(self):
+        path = self._write({"data": {"object": _session()}})
+        rc, out, err = run_cli(["deliver", "--session", path,
+                               "--secret", "s3cr3t", "--min-cents", "4900",
+                               "--currency", "EUR"])
+        self.assertEqual(rc, 0)
+        self.assertIn("SG1-", out)
+        self.assertIn("cs_test_123", out)
+        self.assertIn("4900 EUR", out)
+
+    def test_deliver_refuses_underpaid_session(self):
+        path = self._write({"data": {"object": _session(amount_received=1)}})
+        rc, out, err = run_cli(["deliver", "--session", path,
+                               "--secret", "s3cr3t", "--min-cents", "4900"])
+        self.assertEqual(rc, 1)
+        self.assertIn("refused", err)
+
+    def test_deliver_requires_session_option(self):
+        rc, out, err = run_cli(["deliver", "--secret", "s3cr3t",
+                               "--min-cents", "4900"])
+        self.assertEqual(rc, 2)
+        self.assertIn("--session is required", err)
+
+    def test_deliver_missing_file_is_usage_error(self):
+        rc, out, err = run_cli(["deliver", "--session", "nope.json",
+                               "--secret", "s3cr3t", "--min-cents", "4900"])
+        self.assertEqual(rc, 2)
+        self.assertIn("cannot read", err)
+
+    def test_deliver_invalid_json_is_usage_error(self):
+        path = self._write(None, raw="{not json")
+        rc, out, err = run_cli(["deliver", "--session", path,
+                               "--secret", "s3cr3t", "--min-cents", "4900"])
+        self.assertEqual(rc, 2)
+        self.assertIn("invalid JSON", err)

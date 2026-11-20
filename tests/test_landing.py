@@ -62,6 +62,7 @@ class LandingPageMatchesProductTests(unittest.TestCase):
         self.assertIn("%d real attack cases" % counts["test_shellguard.py"], landing)
         self.assertIn("%d license" % counts["test_license.py"], landing)
         self.assertIn("%d CLI" % counts["test_cli.py"], landing)
+        self.assertIn("%d delivery" % counts["test_delivery.py"], landing)
 
     def test_usage_example_matches_real_output(self):
         landing = _landing()
