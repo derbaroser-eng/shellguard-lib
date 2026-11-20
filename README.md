@@ -35,11 +35,19 @@ sg.run(["false"])                      # Result(returncode=1, ok=False, ...)
 
 ## Install
 
+The `shellguard` name on PyPI belongs to an unrelated package. Install the
+published release wheel directly (zero dependencies, Python 3.8+):
+
 ```bash
-pip install shellguard
+pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.0.0/shellguard-1.0.0-py3-none-any.whl
 ```
 
-Zero dependencies. Python 3.8+.
+Or run from a clone without installing:
+
+```bash
+git clone https://github.com/derbaroser-eng/shellguard-lib.git
+cd shellguard-lib && PYTHONPATH=src python -c "import shellguard; print(shellguard.__version__)"
+```
 
 ## API
 
@@ -57,11 +65,12 @@ Zero dependencies. Python 3.8+.
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-42 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
+61 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
 `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty
 args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr
 separation) plus 16 license issuance and validation cases (forgery, wrong
-issuer secret, expiry, tampered payload, format).
+issuer secret, expiry, tampered payload, format) plus 19 CLI cases (run, quote,
+license, exit codes, entry point).
 
 ## Commercial license
 
