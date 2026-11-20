@@ -1,3 +1,24 @@
+# STATUS — shellguard (2026-11-20T22:45+01:00)
+
+## This run
+- docs gate: `python scripts/docs_gate.py check` -> allowed=true ("live docs fetched and studied"), exit 0; `state` captured (Hermes v0.23.1, Python 3.14.9).
+- product chosen: shellguard — closest to shippable (suite green, landing live, release v1.2.0 live; PyPI blocked).
+- found a real false negative: `sg audit` did NOT flag `asyncio.create_subprocess_shell` (a common async shell-injection sink). Probe before fix: `asyncio.create_subprocess_shell('ls')` -> 0 findings.
+- added rule SG004 (ASYNC_SHELL) in `src/shellguard/audit.py`: matches the dotted call, the `import asyncio as a` alias, and `from asyncio import create_subprocess_shell`. `asyncio.create_subprocess_exec` is correctly NOT flagged.
+- added 2 contract tests in `tests/test_audit.py` (positive + negative): 19 -> 21.
+- docs locked to the new counts: README / LISTING / landing 103 -> 105 product tests, 19 -> 21 audit cases.
+- version 1.2.0 -> 1.3.0; `uv build` exit 0 -> dist/shellguard-1.3.0-py3-none-any.whl + .tar.gz.
+- suite: `PYTHONPATH=src python -m unittest discover -s tests -p "test_*.py"` -> Ran 117 tests, OK, exit 0 (105 product + 6 landing + 6 docs).
+- self-audit: `audit(['src','tests'])` -> 0 findings.
+
+## Next concrete step
+- Publish release v1.3.0 on shellguard-lib (wheel + sdist) and push the landing to derbaroser-eng/shellguard so Pages serves the 105-test page and the v1.3.0 install URL. Then post the landing + release to Python/security channels.
+
+## Blocker
+- PyPI publish still needs a `PYPI_API_TOKEN` (owner step).
+
+---
+
 # STATUS — shellguard (2026-11-20T19:4x+01:00)
 
 ## This run

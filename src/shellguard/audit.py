@@ -20,11 +20,13 @@ __all__ = ["Finding", "Report", "AuditError", "RULES", "scan_text",
 SHELL_TRUE = "SG001"
 OS_EXEC = "SG002"
 STRING_ARGV = "SG003"
+ASYNC_SHELL = "SG004"
 
 RULES = {
     SHELL_TRUE: "shell=True hands untrusted text to a shell parser",
     OS_EXEC: "os.system/os.popen builds a command string for a shell",
     STRING_ARGV: "subprocess call passes a string, not an argv list",
+    ASYNC_SHELL: "asyncio.create_subprocess_shell runs a command string through a shell",
 }
 
 Finding = namedtuple("Finding", ["file", "line", "col", "rule", "code"])
@@ -80,6 +82,8 @@ def _from_call(node):
         return OS_EXEC
     if dotted in ("subprocess.getoutput", "subprocess.getstatusoutput"):
         return OS_EXEC
+    if short == "create_subprocess_shell":
+        return ASYNC_SHELL
     if short in _SUBPROCESS_FUNCS or bare in _SUBPROCESS_FUNCS:
         for kw in node.keywords:
             if kw.arg == "shell" and isinstance(kw.value, ast.Constant) \

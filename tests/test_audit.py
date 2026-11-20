@@ -41,6 +41,17 @@ class ScanTextTests(unittest.TestCase):
         f = A.scan_text("import os\nos.system('ls')\nos.popen('ls')\n")
         self.assertEqual([x.rule for x in f], [A.OS_EXEC, A.OS_EXEC])
 
+    def test_asyncio_shell_is_flagged(self):
+        f = A.scan_text("import asyncio\n"
+                        "asyncio.create_subprocess_shell('ls')\n")
+        self.assertEqual([x.rule for x in f], [A.ASYNC_SHELL])
+        self.assertEqual(f[0].line, 2)
+
+    def test_asyncio_exec_is_not_flagged(self):
+        f = A.scan_text("import asyncio\n"
+                        "asyncio.create_subprocess_exec('ls', '-l')\n")
+        self.assertEqual(f, [])
+
     def test_bare_from_import_name_is_flagged(self):
         f = A.scan_text("from subprocess import run\nrun('ls')\n")
         self.assertEqual([x.rule for x in f], [A.STRING_ARGV])
