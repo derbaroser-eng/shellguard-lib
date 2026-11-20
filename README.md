@@ -39,7 +39,7 @@ The `shellguard` name on PyPI belongs to an unrelated package. Install the
 published release wheel directly (zero dependencies, Python 3.8+):
 
 ```bash
-pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.1.0/shellguard-1.1.0-py3-none-any.whl
+pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.2.0/shellguard-1.2.0-py3-none-any.whl
 ```
 
 Or run from a clone without installing:
@@ -54,6 +54,7 @@ cd shellguard-lib && PYTHONPATH=src python -c "import shellguard; print(shellgua
 - `run(argv, cwd=None, env=None, timeout=None, check=False)` -> `Result`
 - `build(command, args)` -> argv list
 - `quote(text)` -> POSIX single-quoted token (only for explicit shell mode)
+- `audit(paths)` -> `Report(files_scanned, findings, errors)`; `scan_text(text)` -> findings; `render(finding)` -> one line
 - `issue(customer, tier, secret)` -> signed commercial license key
 - `verify(key, secret)` -> `License` (or raises `LicenseError`)
 - `Timeout`, `SafetyError`, `LicenseError` exceptions
@@ -65,12 +66,12 @@ cd shellguard-lib && PYTHONPATH=src python -c "import shellguard; print(shellgua
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-84 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
+103 contract tests: 26 real attack cases (parentheses, backticks, `$( )`, `;`,
 `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty
 args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr
 separation) plus 16 license issuance and validation cases (forgery, wrong
 issuer secret, expiry, tampered payload, format) plus 24 CLI cases (run, quote,
-license, exit codes, entry point) plus 18 delivery cases (license issue, signed key, packaged artifact, email text, Stripe session handoff).
+license, exit codes, entry point) plus 18 delivery cases (license issue, signed key, packaged artifact, email text, Stripe session handoff) plus 19 audit cases (shell=True, os.system/os.popen, string argv, from-import names, unparseable-source fallback, directory walk, excluded dirs, CLI exit codes).
 
 ## Commercial license
 

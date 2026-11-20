@@ -10,9 +10,10 @@ Exit codes: 0 success, 1 command/license failure, 2 usage error.
 from __future__ import annotations
 
 import json
+import os
 import sys
 
-from . import SafetyError, Timeout, quote, run
+from . import SafetyError, Timeout, audit as audit_mod, quote, run
 from .license import LicenseError, issue, verify
 from .delivery import DeliveryError, delivery_email
 
@@ -22,9 +23,12 @@ USAGE = """usage:
   sg license issue --customer EMAIL --tier commercial --secret SECRET
   sg license verify --key KEY --secret SECRET
   sg deliver --session FILE --secret SECRET --min-cents CENTS [--currency EUR]
+  sg audit [--json] PATH [PATH ...]
   sg --version
 
 `sg run` never builds a shell string: every ARG after -- is execve'd as data.
+`sg audit` scans Python source for shell=True, os.system/os.popen and string
+subprocess commands; exit 1 when it finds one, 0 when clean.
 """
 
 
@@ -216,6 +220,42 @@ def _cmd_deliver(argv):
     _out(body)
     return 0
 
+def _cmd_audit(argv):
+    """Scan Python source for shell-injection call sites."""
+    as_json = False
+    paths = []
+    for a in argv:
+        if a in ("-h", "--help"):
+            _out(USAGE)
+            return 0
+        if a == "--json":
+            as_json = True
+            continue
+        if a.startswith("--"):
+            _err("sg audit: unknown option %r\n" % a)
+            return 2
+        paths.append(a)
+    if not paths:
+        _err("sg audit: missing PATH\n")
+        return 2
+    for path in paths:
+        if not os.path.exists(path):
+            _err("sg audit: no such file or directory: %s\n" % path)
+            return 2
+    rep = audit_mod.audit(paths)
+    if as_json:
+        _out(json.dumps({"files_scanned": rep.files_scanned,
+                         "findings": [f._asdict() for f in rep.findings],
+                         "errors": rep.errors}) + "\n")
+    else:
+        for f in rep.findings:
+            _out(audit_mod.render(f) + "\n")
+    if rep.findings:
+        _err("sg audit: %d finding(s) in %d file(s)\n"
+             % (len(rep.findings), rep.files_scanned))
+    return 1 if rep.findings else 0
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0] in ("-h", "--help", "help"):
@@ -230,6 +270,8 @@ def main(argv=None):
         return _cmd_license(rest)
     if cmd == "deliver":
         return _cmd_deliver(rest)
+    if cmd == "audit":
+        return _cmd_audit(rest)
     if cmd in ("--version", "version"):
         from . import __version__
         _out("shellguard %s\n" % __version__)

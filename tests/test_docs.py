@@ -78,6 +78,7 @@ class PublicDocsMatchProductTests(unittest.TestCase):
         self.assertIn("%d license issuance" % counts["test_license.py"], readme)
         self.assertIn("%d CLI cases" % counts["test_cli.py"], readme)
         self.assertIn("%d delivery cases" % counts["test_delivery.py"], readme)
+        self.assertIn("%d audit cases" % counts["test_audit.py"], readme)
 
     def test_listing_install_command_is_the_release_wheel(self):
         url, _wheel = _release_asset_url()

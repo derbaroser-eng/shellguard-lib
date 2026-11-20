@@ -8,7 +8,7 @@
 ## Install
 
 ```bash
-pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.1.0/shellguard-1.1.0-py3-none-any.whl
+pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.2.0/shellguard-1.2.0-py3-none-any.whl
 ```
 
 The `shellguard` name on PyPI belongs to an unrelated package, so the wheel ships
@@ -30,7 +30,8 @@ unavailable service while short probes still worked.
 - `shell=True` and bare-string commands are refused by design
 - Real exit codes, separate stdout/stderr, timeouts, cwd and env control
 - Offline HMAC-SHA256 license keys for the commercial tier
-- 84 contract tests, all running real subprocesses and asserting real output
+- `sg audit`: AST scanner that flags `shell=True`, `os.system`/`os.popen` and string subprocess commands (exit 1 on findings, `--json` for CI)
+- 103 contract tests, all running real subprocesses and asserting real output
 - 26 real attack cases (parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline,
   quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes,
   timeouts, cwd, env, exit codes, stdout/stderr separation)
@@ -58,14 +59,14 @@ supply-chain
 
 ## Publish targets
 
-- Release wheel: https://github.com/derbaroser-eng/shellguard-lib/releases/tag/v1.1.0
+- Release wheel: https://github.com/derbaroser-eng/shellguard-lib/releases/tag/v1.2.0
 - GitHub: https://github.com/derbaroser-eng/shellguard-lib
 - Landing: https://derbaroser-eng.github.io/shellguard/
 - Checkout: Stripe payment link (EUR 49) and support link (from EUR 1)
 
 ## Status
 
-Tests green (84 product + 6 landing + 6 docs = 96, exit 0). The wheel installs
+Tests green (103 product + 6 landing + 6 docs = 115, exit 0). The wheel installs
 into a clean venv and the `shellguard` CLI runs (verified exit 0). Landing page
 live (HTTP 200, Stripe links present). Listing publishable as-is; PyPI publish is
 blocked on a `PYPI_API_TOKEN` (the `shellguard` PyPI name is taken anyway).
