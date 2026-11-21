@@ -1,3 +1,25 @@
+# STATUS — shellguard (2026-11-21, 02:42 cron run)
+
+## This run
+- docs gate: `python scripts/docs_gate.py check` -> allowed=true ("live docs fetched and studied"), exit 0.
+- product chosen: shellguard — closest to shippable (v1.4.0 released, suite green, landing live).
+- executed the next step from last run: live CI badge + GitHub Action usage snippet on the landing page and README (distribution surface for shellguard-action).
+- TDD: 3 new acceptance tests (2 in tests/test_landing.py, 1 in tests/test_docs.py) lock the badge to the real dogfood workflow (.github/workflows/shellguard-audit.yml uses derbaroser-eng/shellguard-action@v1) and require the usage snippet. RED: Ran 126 tests, FAILED (failures=3), exit 1. GREEN after page/README patches: Ran 126 tests, OK, exit 0.
+- fixed ResourceWarning: tests/test_shellguard.py unclosed file now a context manager; `PYTHONPATH="src;tests" python -W error::ResourceWarning -m unittest test_shellguard` -> Ran 26 tests, OK, exit 0.
+- action README suite count 123 -> 126; synced to the published repo via staging clone (remote README blob sha == local git hash-object 44716cfa...), push exit 0. action.yml + LICENSE verified byte-identical to remote (blob sha match).
+- badge live: badge.svg HTTP 200, SVG says "passing"; workflow page HTTP 200.
+- pushed lib (ab311926) + site; Pages status=built; live landing (cache-busted) serves badge + CI gate section + 111-test claim + Stripe CTA (6/6 checks, 9311 bytes).
+- dogfood CI re-run on the new HEAD: run 44853953763 conclusion=success at ab311926.
+- action tests: `python -m unittest test_action test_action_hardening` -> Ran 10 tests, OK, exit 0.
+
+## Next concrete step
+- distribution: post the landing + action to Python/security channels (awesome-list PRs, r/Python, HN Show); NULL TIDE Game Jolt rail (gj-1).
+
+## Blocker
+- PyPI token absent (owner step); itch.io credential absent. Neither blocks the GitHub rail.
+
+---
+
 # STATUS — shellguard (2026-11-20T22:45+01:00)
 
 ## This run
@@ -79,3 +101,25 @@
 - PyPI publish still blocked (no PYPI_API_TOKEN) — not required: README, LISTING and the
   landing all point at the release wheel. Distribution is the remaining gap: post the
   landing + release to Python/security channels.
+
+---
+
+# STATUS — shellguard (2026-11-21T01:55+01:00)
+
+## This run
+- docs gate: `docs_gate.guard()` -> `{}` exit 0 (live-docs receipt valid).
+- verified v1.4.0 already shipped: release asset digests == local dist sha256 (wheel d0415ac..., sdist 61f27f5...); lib+landing repos pushed (0/0 ahead); live landing serves 111 product tests + v1.4.0.
+- real gap found: shellguard-action had 3 RED hardening tests (path guard, wheel sha256 verification, pinned default hash).
+- patched `../shellguard-action/action.yml`: `case "$SG_PATHS"` guard (`-*` -> exit 2), curl + `sha256sum -c` before pip install, `wheel-sha256` input pinned to the real v1.4.0 wheel hash.
+- tests: `python -m unittest test_action test_action_hardening` -> Ran 10 tests, OK, exit 0 (before patch: FAILED failures=3).
+- runtime simulation, both directions: option-like path -> 2; clean src -> 0 (5 files, 0 findings); dirty dir -> 1 (SG002 + ::error::); correct sha256 -> OK/0; wrong sha256 -> FAILED/1.
+- published: https://github.com/derbaroser-eng/shellguard-action (public), release v1.0.0 + tags v1.0.0/v1, all exit 0.
+- dogfood CI: shellguard-lib workflow uses `derbaroser-eng/shellguard-action@v1` on src; run 44849099251 conclusion=success at HEAD 9c5f8853; log lines: "shellguard-1.4.0-py3-none-any.whl: OK", "Successfully installed shellguard-1.4.0", {"files_scanned": 5, "findings": [], "errors": []}.
+- Marketplace URL -> 404 (API-created release not auto-listed; action fully usable via uses:@v1).
+
+## Next concrete step
+- add action badge + usage snippet to the landing page/README (distribution), then NULL TIDE Game Jolt rail (gj-1).
+- minor: ResourceWarning at tests/test_shellguard.py:109 (unclosed file) — cosmetic.
+
+## Blocker
+- PyPI token absent (owner step); itch.io credential absent. Neither blocks the GitHub rail.

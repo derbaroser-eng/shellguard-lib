@@ -38,3 +38,26 @@ Machine-readable evidence. One block per run.
 - suite: `PYTHONPATH=src python -m unittest discover -s tests -p "test_*.py"` -> Ran 67 tests, OK, exit 0
 - PyPI metadata GET: shellguard=200 (taken); shellguard-argv/shell-guard/shellguard-run/sg-run=404 (free)
 - next blocker: PyPI token absent (owner step)
+
+## 2026-11-21T01:55:00+01:00 — shellguard-action hardened + published + dogfooded
+
+- docs gate: `docs_gate.guard()` -> `{}` exit 0
+- RED confirmed: `python -m unittest test_action test_action_hardening` -> FAILED (failures=3) on unpatched action.yml
+- patched action.yml: option-injection path guard, sha256sum -c wheel verification, wheel-sha256 input pinned to d0415acbb2327cb2a1ed5dd3bfbaea02bc203b7952dd4f2f1162548125f07c6f (== real dist wheel)
+- GREEN: same command -> Ran 10 tests, OK, exit 0
+- gate simulation (scratch, real wheel, no download): guard path '--json' -> exit 2; clean src -> exit 0; dirty dir -> exit 1 (SG002); sha256 correct -> OK exit 0; sha256 zeroed -> FAILED exit 1
+- published repo derbaroser-eng/shellguard-action (public) + release v1.0.0 + tags v1.0.0/v1 -> exit 0
+- dogfood: .github/workflows/shellguard-audit.yml in shellguard-lib uses the published action@v1; commit 9c5f8853 pushed; gh run 44849099251 -> conclusion=success; log: wheel ": OK", "Successfully installed shellguard-1.4.0", {"files_scanned": 5, "findings": [], "errors": []}
+- product suite re-verified this run: Ran 123 tests, OK, exit 0
+
+## 2026-11-21T02:42 cron run — CI badge + action usage on public surfaces (TDD)
+
+- docs gate: check -> allowed=true, exit 0
+- RED: 3 new acceptance tests (test_landing +2, test_docs +1) -> Ran 126 tests, FAILED (failures=3), exit 1
+- patched ../shellguard-site/index.html (badge + CI gate section), README.md (badge + CI gate section), tests/test_shellguard.py (unclosed file -> context manager)
+- GREEN: Ran 126 tests, OK, exit 0; -W error::ResourceWarning on test_shellguard -> Ran 26 tests, OK, exit 0
+- action tests: Ran 10 tests, OK, exit 0; action README 123->126 synced via staging clone, push exit 0; remote README blob sha == local git hash-object 44716cfaa8dbe6b09a105e62e40b69df1867d69f; action.yml/LICENSE blob shas already matched
+- badge.svg HTTP 200 "passing"; workflow page HTTP 200
+- privacy scan on all changed public files: clean (grep exit 1)
+- lib push ab311926 exit 0; site push exit 0; Pages status=built; live cache-busted page 6/6 checks true (9311 bytes)
+- dogfood CI on new HEAD: run 44853953763 conclusion=success at ab311926
