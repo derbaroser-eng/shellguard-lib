@@ -1,0 +1,14 @@
+name: shellguard-audit
+on:
+  push:
+    branches: [master]
+  pull_request:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellGuard self-audit (dogfood the published action)
+        uses: derbaroser-eng/shellguard-action@v1
+        with:
+          path: src

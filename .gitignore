@@ -7,3 +7,9 @@ dist/
 .pytest_cache/
 .coverage
 htmlcov/
+
+.env
+*.env
+*.pem
+*.key
+secrets/
