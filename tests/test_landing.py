@@ -86,6 +86,22 @@ class LandingPageMatchesProductTests(unittest.TestCase):
         self.assertIn("buy.stripe.com", landing)
         self.assertIn("EUR49", landing)
 
+    def test_ci_badge_points_at_real_dogfood_workflow(self):
+        landing = _landing()
+        badge = ("https://github.com/derbaroser-eng/shellguard-lib/actions/"
+                 "workflows/shellguard-audit.yml/badge.svg")
+        self.assertIn(badge, landing, "landing has no live CI badge")
+        wf = ROOT / ".github" / "workflows" / "shellguard-audit.yml"
+        self.assertTrue(wf.is_file(), "dogfood workflow missing from lib repo")
+        self.assertIn("derbaroser-eng/shellguard-action@v1",
+                      wf.read_text(encoding="utf-8"),
+                      "badge workflow does not dogfood the published action")
+
+    def test_ci_usage_snippet_present(self):
+        landing = _landing()
+        self.assertIn("uses: derbaroser-eng/shellguard-action@v1", landing,
+                      "landing does not show how to add the CI gate")
+
 
 if __name__ == "__main__":
     unittest.main()

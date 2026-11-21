@@ -94,6 +94,16 @@ class PublicDocsMatchProductTests(unittest.TestCase):
         for stale in ("42 contract tests", "61 contract tests"):
             self.assertNotIn(stale, listing, "stale total left in LISTING")
 
+    def test_readme_ci_badge_and_action_usage(self):
+        readme = _readme()
+        badge = ("https://github.com/derbaroser-eng/shellguard-lib/actions/"
+                 "workflows/shellguard-audit.yml/badge.svg")
+        self.assertIn(badge, readme, "README has no live CI badge")
+        self.assertIn("uses: derbaroser-eng/shellguard-action@v1", readme,
+                      "README does not show the GitHub Action usage")
+        wf = ROOT / ".github" / "workflows" / "shellguard-audit.yml"
+        self.assertTrue(wf.is_file(), "dogfood workflow missing from lib repo")
+
 
 if __name__ == "__main__":
     unittest.main()

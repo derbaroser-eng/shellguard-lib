@@ -1,5 +1,7 @@
 # shellguard
 
+[![shellguard self-audit](https://github.com/derbaroser-eng/shellguard-lib/actions/workflows/shellguard-audit.yml/badge.svg)](https://github.com/derbaroser-eng/shellguard-lib/actions/workflows/shellguard-audit.yml)
+
 Run untrusted text as **arguments**, never as shell syntax.
 
 ## The bug
@@ -72,6 +74,22 @@ args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr
 separation) plus 16 license issuance and validation cases (forgery, wrong
 issuer secret, expiry, tampered payload, format) plus 24 CLI cases (run, quote,
 license, exit codes, entry point) plus 18 delivery cases (license issue, signed key, packaged artifact, email text, Stripe session handoff) plus 27 audit cases (shell=True, os.system/os.popen, asyncio.create_subprocess_shell, string argv, from-import names, import aliases, join/str-built argv, unparseable-source fallback, directory walk, excluded dirs, CLI exit codes).
+
+## CI gate (GitHub Action)
+
+The badge above is this repo's live self-audit: every push runs the published
+action against `src`. Add the same gate to any repository:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: derbaroser-eng/shellguard-action@v1
+  with:
+    path: src
+```
+
+Exit 0 clean, 1 findings (build fails), 2 bad input. The release wheel is
+sha256-verified before install. Action repo:
+<https://github.com/derbaroser-eng/shellguard-action>.
 
 ## Commercial license
 

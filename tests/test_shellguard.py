@@ -106,7 +106,8 @@ class TestContract(unittest.TestCase):
 
     def test_working_directory_is_respected(self):
         with tempfile.TemporaryDirectory() as d:
-            open(os.path.join(d, "marker.txt"), "w").write("M")
+            with open(os.path.join(d, "marker.txt"), "w") as fh:
+                fh.write("M")
             r = sg.run(["ls"], cwd=d)
             self.assertIn("marker.txt", r.stdout)
 
