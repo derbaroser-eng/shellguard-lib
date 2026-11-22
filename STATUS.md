@@ -28,6 +28,15 @@
 ## Blocker
 - PyPI token absent (owner step). GitHub release rail is unblocked.
 
+## 2026-11-22 release evidence (post-push)
+- lib pushed: 5e67232..8adf2f9 master -> master, exit 0 (rebased onto remote human-voice README).
+- release v1.5.0 created: https://github.com/derbaroser-eng/shellguard-lib/releases/tag/v1.5.0, exit 0.
+- assets verified: shellguard-1.5.0-py3-none-any.whl + shellguard-1.5.0.tar.gz.
+- site pushed: f37b4e9..b40ff23 master -> master, exit 0 (rebased onto remote field-note page).
+- suite after both rebases: Ran 135 tests, OK, exit 0.
+- live HTTP: release wheel 200/17645B; landing 200/10046B; EUR49 checkout 200; pay-what-you-can 200.
+- live page contains 135 tests green, 36 audit cases, ['sh','-c', cmd], v1.5.0 install URL; zero stale 126 claims.
+
 ---
 
 # STATUS — shellguard (2026-11-21, 02:42 cron run)

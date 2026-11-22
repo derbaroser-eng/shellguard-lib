@@ -3,6 +3,11 @@
 Machine-readable evidence. One block per run.
 
 ## 2026-11-22 cron run — SG005 shell-argv rule, v1.5.0 release
+## 2026-11-22 release evidence
+- lib push exit 0 (8adf2f9); release v1.5.0 exit 0 with wheel + sdist; site push exit 0 (b40ff23)
+- suite after both rebases: Ran 135 tests, OK, exit 0
+- live checks: wheel 200, landing 200 (135 green / 36 audit / v1.5.0 install), both Stripe links 200
+
 
 - docs gate check -> allowed=true, exit 0
 - RED: 9 new tests in tests/test_audit.py -> Ran 135 tests, FAILED (failures=4, errors=6), exit 1
