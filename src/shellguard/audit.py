@@ -21,12 +21,14 @@ SHELL_TRUE = "SG001"
 OS_EXEC = "SG002"
 STRING_ARGV = "SG003"
 ASYNC_SHELL = "SG004"
+SHELL_ARGV_C = "SG005"
 
 RULES = {
     SHELL_TRUE: "shell=True hands untrusted text to a shell parser",
     OS_EXEC: "os.system/os.popen builds a command string for a shell",
     STRING_ARGV: "subprocess call passes a string, not an argv list",
     ASYNC_SHELL: "asyncio.create_subprocess_shell runs a command string through a shell",
+    SHELL_ARGV_C: "argv invokes a shell with -c on a non-literal command",
 }
 
 Finding = namedtuple("Finding", ["file", "line", "col", "rule", "code"])
@@ -46,6 +48,45 @@ _DEFAULT_EXCLUDE = frozenset([
     ".git", ".hg", ".svn", "node_modules", "__pycache__", ".venv", "venv",
     "env", ".tox", ".mypy_cache", ".pytest_cache", "dist", "build",
 ])
+_SHELLS = frozenset([
+    "sh", "bash", "dash", "zsh", "ksh", "fish", "csh", "tcsh",
+    "cmd", "powershell", "pwsh",
+])
+_SHELL_C_SWITCHES = frozenset(["-c", "/c", "-lc", "-xc", "-ec", "-fc"])
+
+
+def _shell_c_command(node, short):
+    """Return the command expr when argv shells out with ``-c``, else None.
+
+    ``subprocess.run(['sh', '-c', cmd])`` has a safe-looking argv list but still
+    hands ``cmd`` to a shell parser. A literal command is safe by definition,
+    so only a non-literal command expression is reported.
+    """
+    argv = node.args
+    if argv and isinstance(argv[0], (ast.List, ast.Tuple)):
+        if short not in _SUBPROCESS_FUNCS:
+            return None
+        argv = argv[0].elts
+    elif short != "create_subprocess_exec":
+        return None
+    if len(argv) < 3:
+        return None
+    prog = argv[0]
+    if not isinstance(prog, ast.Constant) or not isinstance(prog.value, str):
+        return None
+    base = prog.value.replace("\\", "/").rsplit("/", 1)[-1].lower()
+    if base.endswith(".exe"):
+        base = base[:-4]
+    if base not in _SHELLS:
+        return None
+    for i, item in enumerate(argv[:-1]):
+        if isinstance(item, ast.Constant) and isinstance(item.value, str) \
+                and item.value.lower() in _SHELL_C_SWITCHES:
+            command = argv[i + 1]
+            if isinstance(command, ast.Constant) and isinstance(command.value, str):
+                return None
+            return command
+    return None
 
 
 def _dotted(node):
@@ -128,6 +169,10 @@ def _from_call(node, aliases):
                 return SHELL_TRUE
         if node.args and _stringy(node.args[0]):
             return STRING_ARGV
+    if (short in _SUBPROCESS_FUNCS or bare in _SUBPROCESS_FUNCS
+            or short == "create_subprocess_exec") \
+            and _shell_c_command(node, short) is not None:
+        return SHELL_ARGV_C
     return None
 
 

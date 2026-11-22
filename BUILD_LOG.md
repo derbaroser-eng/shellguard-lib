@@ -2,6 +2,17 @@
 
 Machine-readable evidence. One block per run.
 
+## 2026-11-22 cron run — SG005 shell-argv rule, v1.5.0 release
+
+- docs gate check -> allowed=true, exit 0
+- RED: 9 new tests in tests/test_audit.py -> Ran 135 tests, FAILED (failures=4, errors=6), exit 1
+- GREEN: SG005 (SHELL_ARGV_C) added to src/shellguard/audit.py -> Ran 135 tests, OK, exit 0
+- public docs: README 120 contract tests / 36 audit cases; LISTING 120; site 135 green / 36 audit cases
+- version 1.4.0 -> 1.5.0 (src/shellguard/__init__.py, pyproject.toml, all install URLs)
+- uv build --offline -> exit 0; dist/shellguard-1.5.0-py3-none-any.whl + tar.gz
+- zipfile wheel verification -> SG005 present, METADATA Version: 1.5.0
+- self-audit -> files=12 findings=0 errors=0, exit 0
+
 ## 2026-11-20T17:35:00+01:00 — commercial tier deliverable
 
 - docs gate: `python scripts/docs_gate.py` -> exit 0 ("live docs fetched and studied")

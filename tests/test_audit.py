@@ -110,6 +110,49 @@ o.getcwd()
 """), [])
 
 
+    def test_shell_c_argv_variable_is_flagged(self):
+        f = A.scan_text("import subprocess\nsubprocess.run(['sh', '-c', cmd])\n")
+        self.assertEqual([x.rule for x in f], [A.SHELL_ARGV_C])
+        self.assertEqual(f[0].line, 2)
+
+    def test_shell_c_argv_fstring_is_flagged(self):
+        f = A.scan_text("import subprocess\n"
+                        "subprocess.run(['bash', '-c', f'echo {user}'])\n")
+        self.assertEqual([x.rule for x in f], [A.SHELL_ARGV_C])
+
+    def test_shell_c_argv_literal_is_not_flagged(self):
+        f = A.scan_text("import subprocess\n"
+                        "subprocess.run(['/bin/sh', '-c', 'true'])\n")
+        self.assertEqual(f, [])
+
+    def test_shell_c_argv_aliased_call_is_flagged(self):
+        f = A.scan_text("import subprocess as sp\nsp.run(['sh', '-c', cmd])\n")
+        self.assertEqual([x.rule for x in f], [A.SHELL_ARGV_C])
+
+    def test_shell_c_argv_from_import_is_flagged(self):
+        f = A.scan_text("from subprocess import run\n"
+                        "run(['cmd.exe', '/c', cmd])\n")
+        self.assertEqual([x.rule for x in f], [A.SHELL_ARGV_C])
+
+    def test_shell_c_argv_popen_is_flagged(self):
+        f = A.scan_text("import subprocess\n"
+                        "subprocess.Popen(['powershell', '-c', cmd])\n")
+        self.assertEqual([x.rule for x in f], [A.SHELL_ARGV_C])
+
+    def test_async_shell_c_exec_is_flagged(self):
+        f = A.scan_text("import asyncio\n"
+                        "asyncio.create_subprocess_exec('sh', '-c', cmd)\n")
+        self.assertEqual([x.rule for x in f], [A.SHELL_ARGV_C])
+
+    def test_non_shell_c_argv_is_not_flagged(self):
+        self.assertEqual(A.scan_text("import subprocess\n"
+                                     "subprocess.run(['echo', '-c', cmd])\n"), [])
+
+    def test_shell_without_c_switch_is_not_flagged(self):
+        self.assertEqual(A.scan_text("import subprocess\n"
+                                     "subprocess.run(['sh', 'script.sh', cmd])\n"), [])
+
+
 class AuditPathsTests(unittest.TestCase):
     def setUp(self):
         self.d = tempfile.mkdtemp()

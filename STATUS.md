@@ -1,3 +1,35 @@
+# STATUS — shellguard (2026-11-22 cron run)
+
+## This run
+- docs gate: `python scripts/docs_gate.py check` -> allowed=true, exit 0.
+- product chosen: shellguard — closest to shippable (v1.4.0 released, suite green,
+  landing live, gh authenticated with repo scope).
+- found a real false negative: `subprocess.run(['sh','-c', cmd])` passes an argv
+  list, so SG003 never fires, yet the command still reaches a shell parser.
+  Literal `['sh','-c','true']` is safe and stays unflagged.
+- RED: 9 new contract tests in `tests/test_audit.py` -> Ran 135 tests,
+  FAILED (failures=4, errors=6), exit 1.
+- GREEN: added rule SG005 (SHELL_ARGV_C) in `src/shellguard/audit.py` — detects
+  shell interpreters (sh/bash/dash/zsh/ksh/fish/csh/tcsh/cmd/powershell/pwsh,
+  absolute paths, .exe) invoked with -c/-lc/... on a NON-literal command,
+  including import aliases and `asyncio.create_subprocess_exec`.
+  -> Ran 135 tests, OK, exit 0.
+- public claims locked to source: README 120 contract tests / 36 audit cases;
+  LISTING 120 contract tests; landing 135 tests green / 36 audit cases + rule text.
+- version 1.4.0 -> 1.5.0; `uv build --offline` exit 0 ->
+  dist/shellguard-1.5.0-py3-none-any.whl + .tar.gz (zero downloads).
+- wheel inspected with zipfile: SG005 code present, METADATA Version: 1.5.0.
+- self-audit: `audit(['src','tests'])` -> files=12, findings=0, errors=0, exit 0.
+
+## Next concrete step
+- Distribution: post the v1.5.0 release and landing to Python/security channels
+  (awesome-list PRs, r/Python, HN Show); drive traffic to the store URL.
+
+## Blocker
+- PyPI token absent (owner step). GitHub release rail is unblocked.
+
+---
+
 # STATUS — shellguard (2026-11-21, 02:42 cron run)
 
 ## This run
