@@ -28,11 +28,14 @@ LANDING_TEST = "test_landing.py"
 
 
 def _test_method_counts():
-    """Counts of the *product* suite (this meta-test excluded)."""
+    """Counts of the full suite, matching the landing's stated total.
+
+    The landing reports the whole `unittest discover` run (product tests plus
+    the two meta-tests that hold the docs to reality), so the total asserted
+    here must include them too. Per-file counts are unaffected.
+    """
     counts = {}
     for path in sorted(TESTS.glob("test_*.py")):
-        if path.name in META_TESTS:
-            continue
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         n = 0
         for node in ast.walk(tree):
