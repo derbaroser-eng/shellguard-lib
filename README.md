@@ -82,6 +82,9 @@ Exit 0 clean, 1 on findings (build fails), 2 on bad input. The release wheel is 
 
 I wrote up the production failure and the quieter CWE-88 cases in [A parenthesis broke our command](https://derbaroser-eng.github.io/shellguard/why-argv/). It is a proper write-up, not a sales page.
 
+
+I also wrote [A CI gate for the shell-injection bug that shell=False doesn't fix](https://dev.to/aurum_revenue/a-ci-gate-for-the-shell-injection-bug-that-shellfalse-doesnt-fix-2inf) — the three cases I keep finding in review, and the limits the scanner reports honestly.
+
 ## Commercial license
 
 The MIT source is free forever. Companies that want to embed shellguard in a proprietary product without MIT attribution buy a commercial license: packaged source, an offline HMAC-SHA256 license key, and email support.
