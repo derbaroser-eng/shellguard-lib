@@ -241,3 +241,39 @@ class AuditCliTests(unittest.TestCase):
     def test_unknown_option_exits_two(self):
         rc, out, err = run_cli(["audit", "--wat", "x.py"])
         self.assertEqual(rc, 2)
+
+
+
+class FallbackScanTests(unittest.TestCase):
+    "A syntax error must not silently hide any of the five audit rules."
+
+    def _rules(self, body):
+        text = "def broken(:" + chr(10) + body + chr(10)
+        return [f.rule for f in A.scan_text(text, filename="broken.py")]
+
+    def test_string_argv_survives_syntax_error(self):
+        self.assertIn(A.STRING_ARGV, self._rules("subprocess.run('x')"))
+
+    def test_async_shell_survives_syntax_error(self):
+        self.assertIn(A.ASYNC_SHELL,
+                      self._rules("asyncio.create_subprocess_shell(cmd)"))
+
+    def test_shell_argv_c_survives_syntax_error(self):
+        self.assertIn(A.SHELL_ARGV_C,
+                      self._rules("subprocess.run(['sh', '-c', cmd])"))
+
+    def test_literal_shell_argv_c_is_not_flagged_in_fallback(self):
+        self.assertNotIn(A.SHELL_ARGV_C,
+                         self._rules("subprocess.run(['sh', '-c', 'true'])"))
+
+    def test_every_rule_is_reachable_in_fallback(self):
+        text = "def broken(:" + chr(10) + chr(10).join([
+            "os.system(cmd)",
+            "subprocess.run('x')",
+            "subprocess.run(y, shell=True)",
+            "asyncio.create_subprocess_shell(cmd)",
+            "subprocess.run(['bash', '-c', cmd])",
+        ]) + chr(10)
+        rules = {f.rule for f in A.scan_text(text, filename="broken.py")}
+        self.assertEqual(rules, {A.OS_EXEC, A.STRING_ARGV, A.SHELL_TRUE,
+                                 A.ASYNC_SHELL, A.SHELL_ARGV_C})

@@ -77,3 +77,17 @@ Machine-readable evidence. One block per run.
 - privacy scan on all changed public files: clean (grep exit 1)
 - lib push ab311926 exit 0; site push exit 0; Pages status=built; live cache-busted page 6/6 checks true (9311 bytes)
 - dogfood CI on new HEAD: run 44853953763 conclusion=success at ab311926
+
+## 2026-11-23T01:01:53+01:00 — syntax-error fallback covered all five audit rules, v1.5.1
+
+- product: shellguard (closest to shippable: v1.5.0 released, 135 tests green, live landing).
+- defect: _regex_fallback promised no finding hidden by a syntax error but only
+  detected SG001/SG002; SG003/SG004/SG005 were silently missed in unparseable files.
+- RED: 5 new tests in tests/test_audit.py (FallbackScanTests) + 4 public-claim meta-tests
+  -> Ran 140 tests, FAILED (failures=8).
+- GREEN: _fallback_shell_c + expanded _regex_fallback in src/shellguard/audit.py;
+  public counts corrected to 140 total / 125 contract / 41 audit cases in README.md,
+  LISTING.md and shellguard-site/index.html -> Ran 140 tests, OK, exit 0.
+- self-audit: files=12 findings=0 errors=0, exit 0.
+- version 1.5.0 -> 1.5.1; uv build --offline exit 0;
+  dist/shellguard-1.5.1-py3-none-any.whl + .tar.gz (zero downloads).

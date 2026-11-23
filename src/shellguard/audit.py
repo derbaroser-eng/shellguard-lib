@@ -53,6 +53,7 @@ _SHELLS = frozenset([
     "cmd", "powershell", "pwsh",
 ])
 _SHELL_C_SWITCHES = frozenset(["-c", "/c", "-lc", "-xc", "-ec", "-fc"])
+_QUOTES = frozenset([chr(34), chr(39)])
 
 
 def _shell_c_command(node, short):
@@ -176,14 +177,70 @@ def _from_call(node, aliases):
     return None
 
 
+def _fallback_shell_c(compact):
+    """True when a line shells out through an argv ``-c`` on a live command."""
+    for sh in _SHELLS:
+        for q in ("'", '"'):
+            for needle in (q + sh + q, "/" + sh + q, q + sh + ".exe" + q):
+                pos = compact.find(needle)
+                if pos < 0:
+                    continue
+                for sw in _SHELL_C_SWITCHES:
+                    for sq in ("'", '"'):
+                        token = sq + sw + sq
+                        swpos = compact.find(token, pos)
+                        if swpos < 0:
+                            continue
+                        rest = compact[swpos + len(token):]
+                        if not rest.startswith(","):
+                            continue
+                        cmd = rest[1:]
+                        if cmd[:1] in ("'", '"'):
+                            continue
+                        if (len(cmd) > 1 and cmd[0] in "rRuUbBfF"
+                                and cmd[1] in _QUOTES):
+                            continue
+                        return True
+    return False
+
+
 def _regex_fallback(text):
-    """Line scan for files that do not parse."""
+    """Line scan for source that does not parse.
+
+    All five rules stay reachable here: a syntax error must never hide a
+    finding. The scan trades precision for coverage, so unusual formatting
+    can over-report, but a dangerous call is not silently dropped.
+    """
     out = []
     for i, line in enumerate(text.splitlines(), 1):
+        stripped = line.strip()
+        found = False
         if re.search(r"\bshell\s*=\s*True\b", line):
             out.append((i, line.find("shell") + 1, SHELL_TRUE, line.strip()))
+            found = True
         elif re.search(r"\bos\.(system|popen)\s*\(", line):
             out.append((i, line.find("os.") + 1, OS_EXEC, line.strip()))
+            found = True
+        if found:
+            continue
+        compact = "".join(line.split())
+        if "create_subprocess_shell(" in compact:
+            out.append((i, compact.find("create_subprocess_shell(") + 1,
+                        ASYNC_SHELL, stripped))
+            continue
+        for name in _SUBPROCESS_FUNCS:
+            pos = compact.find(name + "(")
+            if pos < 0:
+                continue
+            arg = compact[pos + len(name) + 1:pos + len(name) + 4]
+            if arg[:1] in ("'", '"') or (len(arg) > 1
+                    and arg[0] in "rRuUbBfF" and arg[1] in ("'", '"')):
+                out.append((i, line.find(name) + 1, STRING_ARGV, stripped))
+                break
+        if out and out[-1][0] == i and out[-1][2] == STRING_ARGV:
+            continue
+        if _fallback_shell_c(compact):
+            out.append((i, line.find("-c") + 1, SHELL_ARGV_C, stripped))
     return out
 
 

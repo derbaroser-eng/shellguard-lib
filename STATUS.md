@@ -1,3 +1,15 @@
+# STATUS — shellguard (2026-11-23T01:01:53+01:00 cron run)
+
+- docs gate: live llms.txt fetched this run; docs-first law honoured.
+- product chosen: shellguard — closest to shippable.
+- fixed real audit false negative: syntax error hid SG003/SG004/SG005.
+- TDD: 5 new tests, RED 140/FAILED(8) -> GREEN 140/OK exit 0.
+- self-audit 0 findings; wheel rebuilt offline as v1.5.1.
+- public claims synced: 140 total / 125 contract / 41 audit cases.
+
+## Next concrete step
+- Publish v1.5.1 release assets and push the site, then verify live URLs.
+
 # STATUS — shellguard (2026-11-22 cron run)
 
 ## This run
