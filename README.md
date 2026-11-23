@@ -61,7 +61,7 @@ cd shellguard-lib && PYTHONPATH=src python -c "import shellguard; print(shellgua
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-140 tests, all green — 125 contract tests and 15 meta-tests that keep the public pages honest. The contract suite is 26 real attack cases, 16 license issuance cases, 24 CLI cases, 18 delivery cases and 41 audit cases. The attack cases cover parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr separation. The audit cases include SG005: an argv list like `['sh', '-c', cmd]` still hands the command to a shell parser when cmd comes from untrusted text.
+142 tests, all green — 125 contract tests and 17 meta-tests that keep the public pages honest. The contract suite is 26 real attack cases, 16 license issuance cases, 24 CLI cases, 18 delivery cases and 41 audit cases. The attack cases cover parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr separation. The audit cases include SG005: an argv list like `['sh', '-c', cmd]` still hands the command to a shell parser when cmd comes from untrusted text.
 
 The test suite is the product as much as the library is: it turns "we hope the prompt is clean" into "the prompt cannot be parsed as syntax."
 

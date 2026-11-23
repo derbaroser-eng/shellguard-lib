@@ -176,3 +176,21 @@
 
 ## Blocker
 - PyPI token absent (owner step); itch.io credential absent. Neither blocks the GitHub rail.
+
+
+# STATUS — shellguard (2026-11-24T00:25+01:00 cron run)
+
+- docs gate: check -> allowed=true, exit 0.
+- product chosen: shellguard — closest to shippable (v1.5.1 live, 140 tests green).
+- real buyer-facing defects found: LISTING.md still linked release tag v1.3.0
+  (current v1.5.1) and stated "111 product + 6 landing + 6 docs = 123" tests.
+- TDD RED: 2 new regression tests in tests/test_docs.py lock (a) every release
+  tag in LISTING equals the installed sg.__version__, (b) the Status total equals
+  the suite counted from source -> Ran 142 tests, FAILED (failures=3), exit 1.
+  Third failure was honest coupling: the landing's "140 tests green" claim is
+  mechanically checked against source and now read 142.
+- GREEN: synced README.md (142 total / 17 meta), LISTING.md (v1.5.1 tag,
+  142 tests green), shellguard-site/index.html (6 places) -> Ran 142 tests,
+  OK, exit 0.
+- privacy scan of all changed public files: clean (no credentials).
+- v1.5.1 wheel/sdist live: HTTP 200 / 18206B and 200 / 27482B.

@@ -59,14 +59,14 @@ supply-chain
 
 ## Publish targets
 
-- Release wheel: https://github.com/derbaroser-eng/shellguard-lib/releases/tag/v1.3.0
+- Release wheel: https://github.com/derbaroser-eng/shellguard-lib/releases/tag/v1.5.1
 - GitHub: https://github.com/derbaroser-eng/shellguard-lib
 - Landing: https://derbaroser-eng.github.io/shellguard/
 - Checkout: Stripe payment link (EUR 49) and support link (from EUR 1)
 
 ## Status
 
-Tests green (111 product + 6 landing + 6 docs = 123, exit 0). The wheel installs
+Tests green (142 tests green — 125 contract + 8 landing + 9 docs, exit 0). The wheel installs
 into a clean venv and the `shellguard` CLI runs (verified exit 0). Landing page
 live (HTTP 200, Stripe links present). Listing publishable as-is; PyPI publish is
 blocked on a `PYPI_API_TOKEN` (the `shellguard` PyPI name is taken anyway).

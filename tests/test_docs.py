@@ -9,6 +9,7 @@ Offline and deterministic.
 from __future__ import annotations
 
 import ast
+import re
 import unittest
 from pathlib import Path
 
@@ -103,6 +104,27 @@ class PublicDocsMatchProductTests(unittest.TestCase):
                       "README does not show the GitHub Action usage")
         wf = ROOT / ".github" / "workflows" / "shellguard-audit.yml"
         self.assertTrue(wf.is_file(), "dogfood workflow missing from lib repo")
+
+
+    def test_listing_release_target_is_current_version(self):
+        """Publish links must send buyers to the release that actually exists."""
+        listing = _listing()
+        current = "v%s" % sg.__version__
+        tags = set(re.findall(r"(?:tag|download)/(v[0-9]+\.[0-9]+\.[0-9]+)", listing))
+        self.assertEqual(tags, {current},
+                         "LISTING points at stale release tag(s): %s"
+                         % sorted(tags - {current}))
+
+    def test_listing_status_total_is_real(self):
+        """The Status line must state the suite total counted from source."""
+        total = 0
+        for path in TESTS.glob("test_*.py"):
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            total += sum(1 for node in ast.walk(tree)
+                         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                         and node.name.startswith("test_"))
+        self.assertIn("%d tests green" % total, _listing(),
+                      "LISTING Status does not state the real suite total")
 
 
 if __name__ == "__main__":

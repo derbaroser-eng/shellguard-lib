@@ -91,3 +91,11 @@ Machine-readable evidence. One block per run.
 - self-audit: files=12 findings=0 errors=0, exit 0.
 - version 1.5.0 -> 1.5.1; uv build --offline exit 0;
   dist/shellguard-1.5.1-py3-none-any.whl + .tar.gz (zero downloads).
+
+
+## 2026-11-24T00:25+01:00 — listing release tag + test-count drift locked (TDD)
+
+- RED: 2 new tests in tests/test_docs.py -> 142 tests, FAILED (failures=3), exit 1.
+- GREEN: LISTING.md release target v1.3.0 -> v1.5.1; Status 123 -> 142 tests green;
+  README 140/15-meta -> 142/17-meta; landing 6 count sites -> 142 -> 142 tests OK, exit 0.
+- public release assets verified live: v1.5.1 wheel 200/18206B, sdist 200/27482B.
