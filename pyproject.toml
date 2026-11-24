@@ -27,3 +27,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 shellguard = ["py.typed"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-p no:pytest_ethereum"
