@@ -4,6 +4,8 @@
 
 Run untrusted text as **arguments**, never as shell syntax. Zero dependencies, Python 3.8+.
 
+If your code ever builds a command with an f-string, this is for you. The library is 142 tests deep (125 contract, 17 meta), version 1.5.1, and installs in one line - no PyPI name collision, no dependencies. The MIT source is free; the commercial license with an offline key is EUR 49 one-time: <https://buy.stripe.com/00weVg5HQawocP77lS4ko0S>.
+
 ## The bug this exists to prevent
 
 ```python
@@ -98,7 +100,7 @@ except LicenseError as exc:
     print("not licensed:", exc)
 ```
 
-See `LICENSE-COMMERCIAL.md`. Checkout and delivery are on the product page: <https://derbaroser-eng.github.io/shellguard/>.
+See `LICENSE-COMMERCIAL.md`. Checkout (EUR 49 one-time, commercial license): <https://buy.stripe.com/00weVg5HQawocP77lS4ko0S>. The free MIT source and full write-up are on <https://derbaroser-eng.github.io/shellguard/>.
 
 ## Limitations (restated in every report)
 
