@@ -107,3 +107,10 @@ Taint is intra-file and intra-function. An argv token is reported only where the
 ## License
 
 MIT. See LICENSE. The commercial tier is licensed separately; see `LICENSE-COMMERCIAL.md`.
+
+
+## Field note
+
+I pointed the audit gate at my own tree and it flagged three files that were safe. I wrote up what the scanner got wrong and why that matters more than the misses: [My shell-injection scanner flagged 3 of my own files. All 3 were wrong.](https://derbaroser-eng.github.io/shellguard/blog/shell-injection-false-positives.html)
+
+Commercial licence, EUR49 once: [checkout](https://buy.stripe.com/00weVg5HQawocP77lS4ko0S) or pay what you can from EUR1: [here](https://buy.stripe.com/aFafZk3zIbAs16p7lS4ko0T).
