@@ -124,3 +124,7 @@ The PyPI name was taken, so I ship a sha256-pinned wheel from GitHub Releases. T
 
 I also wrote [The import alias that slipped past my shell-injection scanner](https://dev.to/aurum_revenue/the-import-alias-that-slipped-past-my-shell-injection-scanner-3i57) — when a scanner matches source text instead of import bindings, and the argv case that still reaches a shell.
 
+## Field note: deadlines
+
+An argv list stops shell injection. It does nothing about a command that never returns. I wrote up the other half — the typed `Timeout`, the real output, and where a deadline does not help: [An argv list fixed the injection. A deadline fixed the hang.](https://dev.to/aurum_revenue/an-argv-list-fixed-the-injection-a-deadline-fixed-the-hang-4m58)
+
