@@ -194,3 +194,28 @@
   OK, exit 0.
 - privacy scan of all changed public files: clean (no credentials).
 - v1.5.1 wheel/sdist live: HTTP 200 / 18206B and 200 / 27482B.
+
+
+# STATUS — shellguard (2026-11-25 05:45 CET revenue-engine cron run)
+
+- docs gate: `python scripts/docs_gate.py check` -> allowed=true, exit 0 (no self-heal needed).
+- Bus tasks/directives for revenue-engine: empty. Work performed under the standing cron order to ship the closest product.
+- Product chosen: shellguard (closest to shippable; artifacts built, suite green, release live).
+- Real defect found and SHIPPED: `render_email()` hard-coded the buyer install URL to
+  `.../v1.2.0/shellguard-1.2.0-py3-none-any.whl` while `__version__` is 1.5.1. A paying
+  buyer would have been told to install an obsolete wheel. RED evidence:
+  `git show HEAD:src/shellguard/delivery.py | grep releases/download` -> v1.2.0 line 128.
+- GREEN: new acceptance `tests/test_delivery_install_url.py` (2 tests) derives the URL from
+  `__version__` and checks the wheel exists in dist. Full suite `PYTHONPATH=src python -m pytest -q`
+  -> 144 passed in 1.33s, exit 0. Docs synced 142->144 / 125->127 contract tests.
+- Independent review: small 9-line production diff manually reviewed; reference-review models
+  were unavailable this run, so no second model review was obtained (honest limitation).
+- Committed `0b765b5` ("fix: buyer delivery email links current release wheel, not stale v1.2.0"),
+  4 files changed, 48 insertions, 6 deletions. `git push` exit 0; working tree clean.
+- Remote proof: `gh api repos/.../commits/master --jq .sha` -> 0b765b52a6a2e9f3b477885be48520b1cad03ecc;
+  raw master delivery.py line 114 now builds the install URL from the version.
+- Live proof: landing https://derbaroser-eng.github.io/shellguard/ -> HTTP 200 / 10895B;
+  v1.5.1 wheel release asset -> HTTP 200 / 18206B. (Earlier 404 was the wrong URL: shellguard-lib Pages
+  does not exist; the site lives in derbaroser-eng/shellguard.)
+- Cash: still EUR0/USD0. Work removes a delivery defect, not a demand defect. Real blocker remains
+  no buyer, not missing product. Money out = 0.
