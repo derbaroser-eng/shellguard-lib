@@ -31,7 +31,7 @@ unavailable service while short probes still worked.
 - Real exit codes, separate stdout/stderr, timeouts, cwd and env control
 - Offline HMAC-SHA256 license keys for the commercial tier
 - `sg audit`: AST scanner that flags `shell=True`, `os.system`/`os.popen`, `asyncio.create_subprocess_shell` and string subprocess commands, including import-aliased forms and `join`/`str`-built argv (exit 1 on findings, `--json` for CI)
-- 125 contract tests, all running real subprocesses and asserting real output
+- 127 contract tests, all running real subprocesses and asserting real output
 - 26 real attack cases (parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline,
   quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes,
   timeouts, cwd, env, exit codes, stdout/stderr separation)
@@ -66,7 +66,7 @@ supply-chain
 
 ## Status
 
-Tests green (142 tests green — 125 contract + 8 landing + 9 docs, exit 0). The wheel installs
+Tests green (144 tests green — 127 contract + 8 landing + 9 docs, exit 0). The wheel installs
 into a clean venv and the `shellguard` CLI runs (verified exit 0). Landing page
 live (HTTP 200, Stripe links present). Listing publishable as-is; PyPI publish is
 blocked on a `PYPI_API_TOKEN` (the `shellguard` PyPI name is taken anyway).

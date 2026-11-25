@@ -4,7 +4,7 @@
 
 Run untrusted text as **arguments**, never as shell syntax. Zero dependencies, Python 3.8+.
 
-If your code ever builds a command with an f-string, this is for you. The library is 142 tests deep (125 contract, 17 meta), version 1.5.1, and installs in one line - no PyPI name collision, no dependencies. The MIT source is free; the commercial license with an offline key is EUR 49 one-time: <https://buy.stripe.com/00weVg5HQawocP77lS4ko0S>.
+If your code ever builds a command with an f-string, this is for you. The library is 144 tests deep (127 contract, 17 meta), version 1.5.1, and installs in one line - no PyPI name collision, no dependencies. The MIT source is free; the commercial license with an offline key is EUR 49 one-time: <https://buy.stripe.com/00weVg5HQawocP77lS4ko0S>.
 
 ## The bug this exists to prevent
 
@@ -63,7 +63,7 @@ cd shellguard-lib && PYTHONPATH=src python -c "import shellguard; print(shellgua
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-142 tests, all green — 125 contract tests and 17 meta-tests that keep the public pages honest. The contract suite is 26 real attack cases, 16 license issuance cases, 24 CLI cases, 18 delivery cases and 41 audit cases. The attack cases cover parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr separation. The audit cases include SG005: an argv list like `['sh', '-c', cmd]` still hands the command to a shell parser when cmd comes from untrusted text.
+144 tests, all green — 127 contract tests and 17 meta-tests that keep the public pages honest. The contract suite is 26 real attack cases, 16 license issuance cases, 24 CLI cases, 18 delivery cases and 41 audit cases. The attack cases cover parentheses, backticks, `$( )`, `;`, `|`, `&&`, newline, quotes, globs, tilde, `$VAR`, redirection, unicode, empty args, binary bytes, timeouts, cwd, env, exit codes, and stdout/stderr separation. The audit cases include SG005: an argv list like `['sh', '-c', cmd]` still hands the command to a shell parser when cmd comes from untrusted text.
 
 The test suite is the product as much as the library is: it turns "we hope the prompt is clean" into "the prompt cannot be parsed as syntax."
 

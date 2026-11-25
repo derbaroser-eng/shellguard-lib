@@ -10,6 +10,7 @@ from __future__ import annotations
 import time
 from collections import namedtuple
 
+from . import __version__
 from .license import issue, verify
 
 __all__ = ["DeliveryError", "Delivery", "parse_session", "fulfill",
@@ -110,6 +111,8 @@ def _expiry(epoch):
 
 def render_email(delivery, *, product="shellguard commercial license"):
     """Render the buyer-facing delivery email for a :class:`Delivery`."""
+    install = ("https://github.com/derbaroser-eng/shellguard-lib/releases/download/"
+               "v%s/shellguard-%s-py3-none-any.whl" % (__version__, __version__))
     return (
         "Subject: Your {product}\n"
         "\n"
@@ -125,13 +128,13 @@ def render_email(delivery, *, product="shellguard commercial license"):
         "Valid until: {exp}\n"
         "\n"
         "Install (zero dependencies):\n"
-        "  pip install https://github.com/derbaroser-eng/shellguard-lib/releases/download/v1.2.0/shellguard-1.2.0-py3-none-any.whl\n"
+        "  pip install {install}\n"
         "\n"
         "The MIT source is free forever; this key covers commercial use without\n"
         "MIT attribution.\n"
     ).format(product=product, key=delivery.license_key, sid=delivery.session_id,
              cents=delivery.amount_cents, cur=delivery.currency,
-             exp=_expiry(delivery.expires))
+             exp=_expiry(delivery.expires), install=install)
 
 
 def delivery_email(event, secret, *, min_cents, currency=None, product=None):
